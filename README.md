@@ -19,7 +19,7 @@ NOTE: This relies on querying a public web service, using an API that they list 
 Until the package is registered, please use:
 ```julia
 using Pkg
-Pkg.add(PackageSpec(name="WebBlast", rev="master", url = "https://github.com/MurrellGroup/WebBlast.jl.git"))
+Pkg.add(PackageSpec(name="WebBlast", url = "https://github.com/MurrellGroup/WebBlast.jl.git"))
 ```
 
 ## Example use:
