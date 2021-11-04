@@ -162,7 +162,11 @@ function WebBLAST(query;
     end
     #Unclear that the "XML" FORMAT_TYPE is working. But no worries for now.
     qstr = "CMD=Put&QUERY="*q*"&PROGRAM=$(program)&DATABASE=$(database)&FORMAT_TYPE=XML&HITLIST_SIZE=$(num_hits)"*option_string;    
-    resp = HTTP.post(blast_URL*qstr);
+    resp = HTTP.request("POST", blast_URL,
+             ["Content-Type" => "application/x-www-form-urlencoded"],
+             qstr);
+    
+    #resp = HTTP.post(blast_URL*qstr);
     respstr = String(HTTP.body(resp));
     RID = ""
     RTOE = 0
