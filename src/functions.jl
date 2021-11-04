@@ -100,6 +100,7 @@ export WebBLAST
 
 """
     WebBLAST(query;
+        query_names = nothing,
         num_hits = 100,
         database = "nt",
         program = "blastn",
@@ -115,6 +116,8 @@ NOTE: This relies on querying a public web service, using an API that they list 
 WHAT YOU PUT IN:
 
 query must be either a String, or an array of String (if searching multiple sequences). These are expected to be nucleotides, or amino acids, but we aren't bothering with specific types for these. Just make sure they match the database and program.
+
+query_names must be nothing (default), in which case your queries will be submitted as query_1, query_2 etc, or a vector of String with as many names as there are queries.
 
 save_XML_path will export the returned XML - you probably don't need this.
 
@@ -141,6 +144,7 @@ Each hit can have more than one "High Similarity Pair" (or "HSP"), so the hit di
 
 """
 function WebBLAST(query;
+        query_names = nothing,
         num_hits = 100,
         database = "nt",
         program = "blastn",
@@ -151,9 +155,19 @@ function WebBLAST(query;
     #This could be done with dispatch, but then I'd have to have all the options repeated.
     if typeof(query) == Vector{String}
         q = ""
+        manufacture_names = false
+        if isnothing(query_names)
+            manufacture_names = true
+        elseif !(length(query_names) == length(query))
+            @warn "Number of query_names not matching number of queries. Ignoring names."
+            manufacture_names = true
+        end
+        if manufacture_names
+            query_names = ["query_$(i)" for i in 1:length(query)]
+        end
         for (i,qu) in enumerate(query)
             #Note URL encoding of > (%3E) and \n (%0A)
-            q *= "%3Equery_$(i)%0A"*qu*"%0A"
+            q *= "%3E$(query_names[i])%0A"*qu*"%0A"
         end
     elseif typeof(query) == String
         q = query
