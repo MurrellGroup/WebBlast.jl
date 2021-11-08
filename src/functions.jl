@@ -101,6 +101,7 @@ export WebBLAST
 """
     WebBLAST(query;
         query_names = nothing,
+        max_waits = Inf,
         num_hits = 100,
         database = "nt",
         program = "blastn",
@@ -120,6 +121,8 @@ query must be either a String, or an array of String (if searching multiple sequ
 query_names must be nothing (default), in which case your queries will be submitted as query_1, query_2 etc, or a vector of String with as many names as there are queries.
 
 save_XML_path will export the returned XML - you probably don't need this.
+
+max_waits controls the waiting time (20 sec per wait) before timeout occurs.
 
 num_hits controls the maximum number of hits that get returned.
 
