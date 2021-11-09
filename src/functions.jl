@@ -202,9 +202,9 @@ function WebBLAST(query;
     getstr = String(HTTP.body(getresp));
     
     #loop that waits for BLAST to finish
-    waits = 0
+    waits = 1
     while occursin("Status=WAITING",getstr) && waits < max_waits
-        verbosity > 0 && println("Waiting for result...")
+        verbosity > 0 && println("Waiting for result $(waits)/$(max_waits) ...")
         sleep(20)
         getresp = HTTP.get(http_str);
         getstr = String(HTTP.body(getresp))
