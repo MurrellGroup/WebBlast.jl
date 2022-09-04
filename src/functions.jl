@@ -101,6 +101,7 @@ export WebBLAST
 """
     WebBLAST(query;
         query_names = nothing,
+        max_waits = Inf,
         num_hits = 100,
         database = "nt",
         program = "blastn",
@@ -120,6 +121,8 @@ query must be either a String, or an array of String (if searching multiple sequ
 query_names must be nothing (default), in which case your queries will be submitted as query_1, query_2 etc, or a vector of String with as many names as there are queries.
 
 save_XML_path will export the returned XML - you probably don't need this.
+
+max_waits controls the waiting time (20 sec per wait) before timeout occurs.
 
 num_hits controls the maximum number of hits that get returned.
 
@@ -145,6 +148,7 @@ Each hit can have more than one "High Similarity Pair" (or "HSP"), so the hit di
 """
 function WebBLAST(query;
         query_names = nothing,
+        max_waits = Inf,
         num_hits = 100,
         database = "nt",
         program = "blastn",
@@ -198,11 +202,13 @@ function WebBLAST(query;
     getstr = String(HTTP.body(getresp));
     
     #loop that waits for BLAST to finish
-    while occursin("Status=WAITING",getstr)
-        verbosity > 0 && println("Waiting for result...")
+    waits = 1
+    while occursin("Status=WAITING",getstr) && waits < max_waits
+        verbosity > 0 && println("Waiting for result $(waits)/$(max_waits) ...")
         sleep(20)
         getresp = HTTP.get(http_str);
         getstr = String(HTTP.body(getresp))
+        waits += 1
     end
     
     if occursin("Status=READY",getstr) && occursin("ThereAreHits=yes",getstr)
@@ -217,6 +223,7 @@ function WebBLAST(query;
         xmldoc = EzXML.parsexml(xmlstr)
         return blast_xml_to_dict_arr(xmldoc)
     else
+        @warn "waited $(waits) times, max_waits = $(max_waits)"
         if verbosity > 1
             @warn "ERROR - BLAST failed. Returning latest HTTP.get request string instead of BLAST results, just in case you can figure out what went wrong."
             return getstr
