@@ -12,7 +12,7 @@ HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 julia = "1.4"
 DataFrames = "1.2.2"
 EzXML = "1.1.0"
-HTTP = "0.9.16"
+HTTP = "1"
 
 [extras]
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
